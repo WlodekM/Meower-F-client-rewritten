@@ -1,44 +1,41 @@
 <!-- Meower Svelte, the app itself. -->
 <script>
-	import Main from "./screens/Main.svelte";
-	import Setup from "./screens/Setup.svelte";
+	import Modal from "../lib/Modal.svelte";
+	import LoginModal from "../lib/modals/Login.svelte";
+	import SignupModal from "../lib/modals/Signup.svelte";
+	import BannedModal from "../lib/modals/Banned.svelte";
+	import IPBannedModal from "../lib/modals/IPBanned.svelte";
+	import DeletePostModal from "../lib/modals/DeletePost.svelte";
+	import ReportPostModal from "../lib/modals/ReportPost.svelte";
+	import ReportUserModal from "../lib/modals/ReportUser.svelte";
+	import GCMemberModal from "../lib/modals/GCMember.svelte";
+	import AddMemberModal from "../lib/modals/AddMember.svelte";
+	import RemoveMemberModal from "../lib/modals/RemoveMember.svelte";
+	import CreateChatModal from "../lib/modals/CreateChat.svelte";
+	import SetQuoteModal from "../lib/modals/SetQuote.svelte";
+	import ChangePasswordModal from "../lib/modals/ChangePassword.svelte";
+	import DeleteAccountModal from "../lib/modals/DeleteAccount.svelte";
+	import ErrorModal from "../lib/modals/Error.svelte";
+	import LogoutModal from "../lib/modals/Logout.svelte";
+	import AnnounceModal from "../lib/modals/Announce.svelte";
+	import AddMember2Modal from "../lib/modals/AddMember_2.svelte";
+	import AddMemberSearchModal from "../lib/modals/AddMember_Search.svelte";
+	import AddMemberModeModal from "../lib/modals/AddMember_Mode.svelte";
+	import SearchResultsModal from "../lib/modals/SearchResults.svelte";
+	import SwitchThemeModal from "../lib/modals/SwitchTheme.svelte";
+	import AddImgModal from "../lib/modals/AddImage.svelte";
+	import SwitchBGMSFXModal from "../lib/modals/SwitchBGMSFX.svelte";
+	import BasicModal from "../lib/modals/Basic.svelte";
+	import DevTooldModal from "../lib/modals/DevTools.svelte";
+	import CustomThemeModal from "../customthemes/CustomTheme.svelte";
+	import ImageModal from "../lib/modals/Image.svelte";
 
-	import Modal from "./lib/Modal.svelte";
-	import LoginModal from "./lib/modals/Login.svelte";
-	import SignupModal from "./lib/modals/Signup.svelte";
-	import BannedModal from "./lib/modals/Banned.svelte";
-	import IPBannedModal from "./lib/modals/IPBanned.svelte";
-	import DeletePostModal from "./lib/modals/DeletePost.svelte";
-	import ReportPostModal from "./lib/modals/ReportPost.svelte";
-	import ReportUserModal from "./lib/modals/ReportUser.svelte";
-	import GCMemberModal from "./lib/modals/GCMember.svelte";
-	import AddMemberModal from "./lib/modals/AddMember.svelte";
-	import RemoveMemberModal from "./lib/modals/RemoveMember.svelte";
-	import CreateChatModal from "./lib/modals/CreateChat.svelte";
-	import SetQuoteModal from "./lib/modals/SetQuote.svelte";
-	import ChangePasswordModal from "./lib/modals/ChangePassword.svelte";
-	import DeleteAccountModal from "./lib/modals/DeleteAccount.svelte";
-	import ErrorModal from "./lib/modals/Error.svelte";
-	import LogoutModal from "./lib/modals/Logout.svelte";
-	import AnnounceModal from "./lib/modals/Announce.svelte";
-	import AddMember2Modal from "./lib/modals/AddMember_2.svelte";
-	import AddMemberSearchModal from "./lib/modals/AddMember_Search.svelte";
-	import AddMemberModeModal from "./lib/modals/AddMember_Mode.svelte";
-	import SearchResultsModal from "./lib/modals/SearchResults.svelte";
-	import SwitchThemeModal from "./lib/modals/SwitchTheme.svelte";
-	import AddImgModal from "./lib/modals/AddImage.svelte";
-	import SwitchBGMSFXModal from "./lib/modals/SwitchBGMSFX.svelte";
-	import BasicModal from "./lib/modals/Basic.svelte";
-	import DevTooldModal from "./lib/modals/DevTools.svelte";
-	import CustomThemeModal from "./customthemes/CustomTheme.svelte";
-	import ImageModal from "./lib/modals/Image.svelte";
+	import ModPanel from "../lib/ModPanel.svelte";
 
-	import ModPanel from "./lib/ModPanel.svelte";
-
-	import Spinner from "./lib/Spinner.svelte";
-	import {link} from "./lib/clmanager.js";
-	import {mobile, touch} from "./lib/responsiveness.js";
-	import * as BGM from "./lib/BGM.js";
+	import Spinner from "../lib/Spinner.svelte";
+	import {link} from "../lib/clmanager.js";
+	import {mobile, touch} from "../lib/responsiveness.js";
+	import * as BGM from "../lib/BGM.js";
 
 	import {
 		screen,
@@ -52,10 +49,10 @@
 		spinner,
 		modPanelOpen,
 		customTheme
-	} from "./lib/stores.js";
+	} from "../lib/stores.js";
 	import {tick} from "svelte";
-	import {stringToTheme} from "./customthemes/CustomTheme.js";
-	import {altHeld, shiftHeld, isKeyPressed} from "./lib/keyDetect.js";
+	import {stringToTheme} from "../customthemes/CustomTheme.js";
+	import {altHeld, shiftHeld, isKeyPressed} from "../lib/keyDetect.js";
 	var _customTheme
 	const themes = {
 		"orange":{
