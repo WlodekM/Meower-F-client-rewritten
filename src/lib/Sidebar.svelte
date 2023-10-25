@@ -265,7 +265,7 @@
 
 	.locked {
 		height: 100%;
-		width: 100%;
+		width: 3.5em;
 		z-index: 10;
 		position: absolute;
 		background-color: var(--background);
