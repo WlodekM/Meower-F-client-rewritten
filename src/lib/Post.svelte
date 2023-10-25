@@ -150,22 +150,23 @@
 	function format(input) {
 		let out = input;
 		let formating = {
-			b: "<b>",
-			i: "<i>",
-			u: "<ins>",
-			bq: "<blockquote>",
-			s: "<strike>",
-			list: "<ul>",
-			item: "<li>",
-			table: "<table>",
-			tr: "<tr>",
-			th: "<th>",
-			data: "<td>",
+			b:     "b",
+			i:     "i",
+			u:     "ins",
+			bq:    "blockquote",
+			s:     "strike",
+			list:  "ul",
+			item:  "li",
+			table: "table",
+			tr:    "tr",
+			th:    "th",
+			data:  "td",
 		};
 		Object.keys(formating).forEach(function (key) {
-			out = out.replaceAll(`${"[" + key + "]"}`, formating[key]);
-			out = out.replaceAll(`${"[/" + key + "]"}`, `/${formating[key]}`);
+			out = out.replaceAll(`${"[" + key + "]"}`, `<${formating[key]}>`);
+			out = out.replaceAll(`${"[/" + key + "]"}`, `</${formating[key]}>`);
 		});
+		console.log
 		return out;
 	}
 	function deHTML(input) {
@@ -407,13 +408,14 @@
 	{/if}
 	<div class="post-images">
 		{#each images as { title, url }}
+		<a href="#image" on:click={() => openImage({ url })}>
 			<img
 				src={url}
 				alt={title}
 				{title}
 				class="post-image"
-				on:click={openImage({ url })}
 			/>
+		</a>
 		{/each}
 	</div>
 </Container>

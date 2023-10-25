@@ -8,6 +8,31 @@
 	What's new?
 </Container>
 <Container>
+	<h2>0.1.7 beta</h2>
+	<ul>
+		<li>Ported to svelte 1.7</li>
+	</ul>
+</Container>
+<Container>
+	<h2>0.1.2</h2>
+	<ul>
+		<li>Added image modal when clicked</li>
+		<li>Fixed various bugs</li>
+		<li>Added custom theme support</li>
+	</ul>
+</Container>
+<Container>
+	<h2>0.1.1</h2>
+	<ul>
+		<li>Versions and stuff</li>
+		<li>Changed "Meower Svelte" to "Meower F Client Rewritten</li>
+	</ul>
+</Container>
+<Container>
+	<h2>0.1.0</h2>
+	<ul><li>Inital beta</li></ul>
+</Container>
+<Container>
 	<h2>1.7.0</h2>
 	<ul>
 		<li>Routing (you can now share links to specific pages on Meower!)</li>

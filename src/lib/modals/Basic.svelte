@@ -1,29 +1,19 @@
 <script>
 	import Modal from "../Modal.svelte";
 
-	import {modalShown, basicModalDesc, basicModalTitle} from "../stores.js";
+	import * as modals from "../modals.js";
 
-	let Desc = ($basicModalDesc != "") && $basicModalDesc || "Error loading description."
-	let Title = ($basicModalTitle != "") && $basicModalTitle || "Error loading title"
+	export let modalData;
+
+	let {title, desc} = modalData;
 </script>
 
-<Modal
-	on:close={() => {
-		$modalShown = false;
-	}}
->
-	<h2 slot="header">{Title}</h2>
+<Modal on:close={modals.closeLastModal}>
+	<h2 slot="header">{title}</h2>
 	<div slot="default">
-		<p>{Desc}</p>
+		<p>{desc}</p>
 		<div class="modal-buttons">
-			<button
-				on:click={() => {
-					$modalShown = false;
-				}}>Close</button
-			>
+			<button on:click={modals.closeLastModal}>Close</button>
 		</div>
 	</div>
 </Modal>
-
-<style>
-</style>

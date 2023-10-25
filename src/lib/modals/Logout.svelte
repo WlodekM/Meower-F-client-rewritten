@@ -1,40 +1,19 @@
 <script>
 	import Modal from "../Modal.svelte";
 
-	import {
-		setupPage,
-		screen,
-		modalShown,
-	} from "../stores.js";
-	import * as clm from "../clmanager.js";
+	import * as modals from "../modals.js";
 
-	import {tick} from "svelte";
+	import {goto, focus} from "@roxi/routify";
 </script>
 
-<Modal
-	on:close={() => {
-		$modalShown = false;
-	}}
->
+<Modal on:close={modals.closeLastModal}>
 	<h2 slot="header">Logout</h2>
 	<div slot="default">
 		<span>Are you sure you would like to logout?</span>
 		<br /><br />
 		<div class="modal-buttons">
-			<button
-				on:click={() => {
-					$modalShown = false;
-				}}>Cancel</button
-			>
-			<button
-				on:click={async () => {
-					await clm.disconnect();
-					modalShown.set(false);
-					screen.set("setup");
-					await tick();
-					setupPage.set("reconnect");
-				}}>Logout</button
-			>
+			<button on:click={modals.closeLastModal}>Cancel</button>
+			<button on:click={() => $goto("/logout")} use:focus>Logout</button>
 		</div>
 	</div>
 </Modal>

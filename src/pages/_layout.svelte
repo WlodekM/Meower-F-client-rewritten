@@ -1,5 +1,8 @@
 <!-- Meower Svelte, the app itself. -->
 <script>
+	import Setup from "../lib/Setup.svelte";
+	import OOBE from "../lib/OOBE/Main.svelte";
+	import Sidebar from "../lib/Sidebar.svelte";
 	import Modal from "../lib/Modal.svelte";
 	import LoginModal from "../lib/modals/Login.svelte";
 	import SignupModal from "../lib/modals/Signup.svelte";
@@ -48,6 +51,7 @@
 		user,
 		spinner,
 		modPanelOpen,
+		OOBERunning,
 		customTheme
 	} from "../lib/stores.js";
 	import {tick} from "svelte";
@@ -113,7 +117,7 @@
 	class:theme-blue={$user.theme === "blue"}
 	class:mode-light={$user.mode === true && ($user.name || $screen !== "setup")}
 	class:mode-dark={$user.mode === false || !($user.name || $screen !== "setup")}
-	class:layout-old={$user.layout === "old"}
+	class:layout-old={false}
 	class:layout-mobile={$mobile}
 	class:input-touch={$touch}
 	class:input-hover={!$touch}
@@ -140,8 +144,8 @@
 			</Modal>
 		</div>
 	{/if}
-
-	{#if $reconnecting}
+	<!-- was {#if $reconnecting}, removed due to errors -->
+	{#if false} 
 		<Modal>
 			<h2 slot="header">Reconnecting...</h2>
 			<div slot="default">
@@ -225,7 +229,7 @@
 	{:else}
 		<div class="main-screen">
 			<div class="transition" />
-			<div class="sidebar">
+			<div class="sidebar-container">
 				<Sidebar />
 			</div>
 			<div class="view">
@@ -246,6 +250,10 @@
 </main>
 
 <style>
+	.sidebar-container {
+		padding: 0;
+		margin-right: 0.5em;
+	}
 	.spinner-container {
 		position: fixed;
 		right: 27px;
@@ -275,6 +283,7 @@
 		color: var(--foreground);
 		scrollbar-color: var(--orange) var(--orange-scrollbar-back);
 		font-size: 15pt;
+		box-sizing: border-box;
 	}
 
 	#main.mode-dark {
@@ -285,5 +294,19 @@
 
 	.setup.mode-dark {
 		background: var(--background)
+	}
+
+	.main-screen .view {
+		width: 100%;
+		overflow: auto;
+	}
+
+	.main-screen {
+		display: flex;
+		flex-direction: row;
+		gap: 0;
+		width: 100vw;
+		height: 100vh;
+		overflow: hidden;
 	}
 </style>

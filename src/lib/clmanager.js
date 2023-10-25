@@ -2,21 +2,30 @@
  * @file The "main" CloudLink instance provider, also providing some handy utility functions.
  */
 
+import ConnectionFailedModal from "./modals/ConnectionFailed.svelte";
+import LoggedOutModal from "./modals/LoggedOut.svelte";
+import AccountBannedModal from "./modals/safety/AccountBanned.svelte";
+
 import Cloudlink from "./cloudlink.js";
 import {
 	screen,
-	setupPage,
+	relationships,
+	chats,
 	ulist,
 	user,
+	authHeader,
 	spinner,
+	intentionalDisconnect,
+	reconnecting,
 	disconnected,
 	disconnectReason,
-	attemptedAutoReconnect,
 } from "./stores.js";
 import unloadedProfile from "./unloadedprofile.js";
-import {linkUrl} from "./urls.js";
+import {stringToTheme} from "../customthemes/CustomTheme.js";
+import {linkUrl, apiUrl} from "./urls.js";
+import * as modals from "./modals.js";
+
 import {tick} from "svelte";
-import sleep from "../lib/sleep.js";
 
 /**
  * A list of status codes that indicate the client will be disconnected.
@@ -24,28 +33,80 @@ import sleep from "../lib/sleep.js";
 const disconnectCodes = [
 	"E:018 | Account Banned",
 	"E:020 | Kicked",
-	"E:110 | ID conflict",
-	"E:119 | IP Blocked"
+	"I:024 | Logged out",
+	"E:119 | IP Blocked",
 ];
 
-let _user = null;
+let _user = unloadedProfile();
+let _userLoaded = false;
 user.subscribe(v => {
-	_user = v;
-	if (_user.name)
+	if (_userLoaded) {
+		_user = v;
+		
 		localStorage.setItem(
 			"meower_savedconfig",
-			JSON.stringify({theme: _user.theme, mode: _user.mode})
+			JSON.stringify({
+				theme: _user.theme,
+				mode: _user.mode,
+				sfx: _user.sfx,
+				bgm: _user.bgm,
+				bgm_song: _user.bgm_song,
+				layout: _user.layout,
+			})
 		);
+	} else {
+		_user = v;
+		_userLoaded = true;
+	}
+});
+
+let _authHeader = null;
+authHeader.subscribe(v => {
+	_authHeader = v;
+	if (_authHeader.username && _authHeader.token) {
+		localStorage.setItem("meower_savedusername", _authHeader.username);
+		localStorage.setItem("meower_savedpassword", _authHeader.token);
+	}
+});
+
+let _relationships = null;
+relationships.subscribe(v => (_relationships = v));
+
+let _chats = null;
+chats.subscribe(v => (_chats = v));
+
+/**
+ * Listens to username and token updates that could happen by other tabs.
+ */
+addEventListener("storage", event => {
+	if (event.key === "meower_savedusername") {
+		if (event.newValue !== _authHeader.username) {
+			authHeader.set({
+				username: event.newValue,
+				..._authHeader,
+			});
+			link.disconnect(1000, "Intentional disconnect");
+		}
+	} else if (event.key === "meower_savedpassword") {
+		if (event.newValue !== _authHeader.token) {
+			authHeader.set({
+				token: event.newValue,
+				..._authHeader,
+			});
+		}
+	}
 });
 
 // Load saved config from local storage
 if (localStorage.getItem("meower_savedconfig")) {
-	const profile = _user;
 	const savedConfig = JSON.parse(localStorage.getItem("meower_savedconfig"));
-
-	profile.theme = savedConfig.theme;
-	profile.mode = savedConfig.mode;
-	user.set(profile);
+	_user.theme = savedConfig.theme;
+	_user.mode = savedConfig.mode;
+	_user.sfx = savedConfig.sfx;
+	_user.bgm = savedConfig.bgm;
+	_user.bgm_song = savedConfig.bgm_song;
+	_user.layout = savedConfig.layout;
+	user.set(_user);
 }
 
 /**
@@ -73,10 +134,49 @@ let disconnectEvent = null;
  */
 let ulistEvent = null;
 /**
+ * A variable used to keep track of the manager's main auth event.
+ * @type any
+ */
+let authEvent = null;
+/**
+ * A variable used to keep track of banned events.
+ * @type any
+ */
+let bannedEvent = null;
+/**
  * A variable used to keep track of new inbox messages.
  * @type any
  */
 let inboxMessageEvent = null;
+/**
+ * A variable used to keep track of relationship state updates.
+ */
+let relationshipUpdateEvent = null;
+/**
+ * A variable used to keep track of user config updates.
+ * @type any
+ */
+let configUpdateEvent = null;
+/**
+ * A variable used to keep track of chat creations.
+ * @type any
+ */
+let chatCreateEvent = null;
+/**
+ * A variable used to keep track of chat updates.
+ * @type any
+ */
+let chatUpdateEvent = null;
+/**
+ * A variable used to keep track of chat deletes.
+ * @type any
+ */
+let chatDeleteEvent = null;
+/**
+ * A variable used to keep track of chat messages to open DMs if it's not already open.
+ * @type any
+ */
+let chatMsgEvent = null;
 /**
  * A variable used to keep track of any disconnection requests.
  * @type any
@@ -106,9 +206,41 @@ export async function connect() {
 		link.off(ulistEvent);
 		ulistEvent = null;
 	}
+	if (authEvent) {
+		link.off(authEvent);
+		authEvent = null;
+	}
+	if (bannedEvent) {
+		link.off(bannedEvent);
+		bannedEvent = null;
+	}
 	if (inboxMessageEvent) {
 		link.off(inboxMessageEvent);
 		inboxMessageEvent = null;
+	}
+	if (relationshipUpdateEvent) {
+		link.off(relationshipUpdateEvent);
+		relationshipUpdateEvent = null;
+	}
+	if (configUpdateEvent) {
+		link.off(configUpdateEvent);
+		configUpdateEvent = null;
+	}
+	if (chatCreateEvent) {
+		link.off(chatCreateEvent);
+		chatCreateEvent = null;
+	}
+	if (chatUpdateEvent) {
+		link.off(chatUpdateEvent);
+		chatUpdateEvent = null;
+	}
+	if (chatDeleteEvent) {
+		link.off(chatDeleteEvent);
+		chatDeleteEvent = null;
+	}
+	if (chatMsgEvent) {
+		link.off(chatMsgEvent);
+		chatMsgEvent = null;
 	}
 	if (disconnectRequest) {
 		link.off(disconnectRequest);
@@ -125,46 +257,81 @@ export async function connect() {
 	link.once("connectionstart", () => {
 		connectEvent = link.on("connected", () => {
 			disconnected.set(false);
-			attemptedAutoReconnect.set(false);
 			pingInterval = setInterval(() => {
 				link.send({cmd: "ping", val: ""});
 			}, 10000);
 		});
 		disconnectEvent = link.on("disconnected", async e => {
-			// clear values and listeners
-			ulist.set([]);
-			let tmp_unloaded = unloadedProfile();
-			tmp_unloaded.theme = _user.theme;
-			tmp_unloaded.mode = _user.mode;
-			tmp_unloaded.layout = _user.layout;
-			user.set(tmp_unloaded);
-			if (pingInterval) {
-				clearInterval(pingInterval);
-				pingInterval = null;
-			}
+			// make sure connection was started (we can know by checking if pingInterval is set)
+			if (!pingInterval) return;
 
-			// get disconnect reason
-			let _disconnectReason = "";
-			disconnectReason.subscribe(v => {_disconnectReason = v});
+			// clear ping interval
+			clearInterval(pingInterval);
+			pingInterval = null;
 
-			// get whether an auto reconnect has already been attempted
-			let _attemptedAutoReconnect = false;
-			attemptedAutoReconnect.subscribe(v => {_attemptedAutoReconnect = v});
+			// show disconnected modal if disconnect reason is set
+			disconnectReason.subscribe(v => {
+				if (v) {
+					disconnected.set(true);
+					return;
+				}
+			});
 
-			// attempt reconnect otherwise fully disconnect
-			if (
-				!_attemptedAutoReconnect &&
-				!disconnectCodes.includes(_disconnectReason) &&
-				e.reason !== "Intentional disconnect"
-			) {
-				attemptedAutoReconnect.set(true);
-				screen.set("setup");
-				disconnected.set(false);
+			let _intentionalDisconnect;
+			intentionalDisconnect.subscribe(v => {
+				_intentionalDisconnect = v;
+			});
+			if (_intentionalDisconnect) return;
+
+			const onErrorEv = link.on("error", async e => {
+				link.error("manager", "auto-reconnection failed:", e);
+				reconnecting.set(true);
+				try {
+					await link.connect(linkUrl);
+				} catch (e) {
+					link.error("manager", "connection error:", e);
+					link.off(onErrorEv);
+					modals.showModal(ConnectionFailedModal);
+				}
+			});
+			link.once("connected", async () => {
+				link.log("manager", "connection restored");
+				link.off(onErrorEv);
+
+				// re-authenticate
+				if (_authHeader.username && _authHeader.token) {
+					try {
+						await meowerRequest({
+							cmd: "direct",
+							val: {
+								cmd: "authpswd",
+								val: {
+									username: _authHeader.username,
+									pswd: _authHeader.token,
+								},
+							},
+						});
+					} catch (e) {
+						console.error(e);
+						modals.showModal(LoggedOutModal);
+					}
+				}
+
+				// refresh screen
+				screen.set("blank");
 				await tick();
-				await sleep(1000);
-				setupPage.set("autoReconnect");
-			} else {
-				disconnected.set(true);
+				screen.set("main");
+
+				// hide modal
+				reconnecting.set(false);
+			});
+			try {
+				link.warn("manager", "connection lost with error:", e.code);
+				await link.connect(linkUrl);
+			} catch (e) {
+				link.error("manager", "connection error:", e);
+				link.off(onErrorEv);
+				modals.showModal(ConnectionFailedModal);
 			}
 		});
 		ulistEvent = link.on("ulist", cmd => {
@@ -174,18 +341,129 @@ export async function connect() {
 			}
 			ulist.set(_ulist);
 		});
+		authEvent = link.on("direct", async cmd => {
+			if (cmd.val.mode === "auth") {
+				// set user, auth header, and relationships
+				user.update(v =>
+					Object.assign(v, {
+						...cmd.val.payload.account,
+						name: cmd.val.payload.username,
+					})
+				);
+				authHeader.set({
+					username: cmd.val.payload.username,
+					token: cmd.val.payload.token,
+				});
+				_relationships = {};
+				for (let relationship of cmd.val.payload.relationships) {
+					_relationships[relationship.username] = relationship.state;
+				}
+				relationships.set(_relationships);
+
+				// get and set chats
+				await tick();
+				const resp = await fetch(`${apiUrl}chats?autoget=1`, {
+					headers: _authHeader,
+				});
+				const json = await resp.json();
+				chats.set(json.autoget);
+			}
+		});
+		bannedEvent = link.on("direct", async cmd => {
+			if (cmd.val.mode === "banned") {
+				modals.showModal(AccountBannedModal, {ban: cmd.val.payload});
+			}
+		});
 		inboxMessageEvent = link.on("direct", cmd => {
-			if (cmd.val.mode == "inbox_message") {
+			if (cmd.val.mode === "inbox_message") {
 				_user.unread_inbox = true;
 				user.set(_user);
 			}
 		});
-		disconnectRequest = link.on("direct", cmd => {
+		relationshipUpdateEvent = link.on("direct", cmd => {
+			if (cmd.val.mode === "update_relationship") {
+				_relationships[cmd.val.payload.username] =
+					cmd.val.payload.state;
+				relationships.set(_relationships);
+			}
+		});
+		configUpdateEvent = link.on("direct", cmd => {
+			if (cmd.val.mode === "update_config") {
+				_user = {
+					..._user,
+					...cmd.val.payload,
+				};
+				user.set(_user);
+			}
+		});
+		chatCreateEvent = link.on("direct", cmd => {
+			if (cmd.val.mode === "create_chat") {
+				let itemIndex = _chats.findIndex(
+					chat => chat._id === cmd.val.payload._id
+				);
+				if (itemIndex !== -1) return;
+				_chats.push(cmd.val.payload);
+				chats.set(_chats);
+			}
+		});
+		chatUpdateEvent = link.on("direct", cmd => {
+			if (cmd.val.mode === "update_chat") {
+				let itemIndex = _chats.findIndex(
+					chat => chat._id === cmd.val.payload._id
+				);
+				if (itemIndex === -1) return;
+				_chats[itemIndex] = Object.assign(
+					_chats[itemIndex],
+					cmd.val.payload
+				);
+				chats.set(_chats);
+			}
+		});
+		chatDeleteEvent = link.on("direct", cmd => {
+			if (cmd.val.mode === "delete") {
+				_chats = _chats.filter(chat => chat._id !== cmd.val.id);
+				chats.set(_chats);
+			}
+		});
+		chatMsgEvent = link.on("direct", async cmd => {
+			if (cmd.val.state === 2) {
+				let chatIndex = _chats.findIndex(
+					chat => chat._id === cmd.val.post_origin
+				);
+				if (chatIndex === -1) {
+					try {
+						const resp = await fetch(
+							`${apiUrl}chats/${cmd.val.post_origin}`,
+							{
+								method: "GET",
+								headers: _authHeader,
+							}
+						);
+						if (!resp.ok) {
+							throw new Error(
+								"Response code is not OK; code is " +
+									resp.status
+							);
+						}
+						const chat = await resp.json();
+						_chats.push(chat);
+						chats.set(_chats);
+					} catch (e) {
+						console.error(
+							`Failed getting chat ${cmd.val.post_origin}: ${e}`
+						);
+					}
+				} else {
+					_chats[chatIndex].last_active = cmd.val.t.e;
+					chats.set(_chats);
+				}
+			}
+		});
+		disconnectRequest = link.on("direct", async cmd => {
 			if (disconnectCodes.includes(cmd.val)) {
-				link.disconnect();
-				disconnectReason.set(cmd.val);
-				disconnected.set(true);
-				link.log("manager", "requested disconnect:", cmd.val);
+				link.log("manager", "Requested disconnect:", cmd.val);
+				modals.showModal(LoggedOutModal);
+				await disconnect();
 			}
 		});
 	});
@@ -194,9 +472,8 @@ export async function connect() {
 	try {
 		return await link.connect(linkUrl);
 	} catch (e) {
-		disconnectReason.set(e);
-		disconnected.set(true);
 		link.error("manager", "conenction error:", e);
+		modals.showModal(ConnectionFailedModal);
 		return e;
 	}
 }
@@ -220,17 +497,8 @@ export async function disconnect() {
 		return new Promise(r => r());
 	}
 	link.log("manager", "safely disconnecting");
+	intentionalDisconnect.set(true);
 	return new Promise(resolve => {
-		ulist.set([]);
-		user.set(unloadedProfile());
-		if (disconnectEvent) {
-			link.off(disconnectEvent);
-			disconnectEvent = null;
-		}
-		if (pingInterval) {
-			clearInterval(pingInterval);
-			pingInterval = null;
-		}
 		link.once("disconnected", resolve);
 		link.disconnect(1000, "Intentional disconnect");
 	});
@@ -281,13 +549,16 @@ export async function meowerRequest(data) {
  *
  * @returns {Promise<object | string>} Either an object or an error code; see meowerRequest.
  */
-export async function updateProfile() {
-	const profile = _user;
+export async function updateProfile(updatedValues) {
+	if (!_user.name) return;
+	Object.assign(_user, updatedValues);
+	user.set(_user);
 	return meowerRequest({
 		cmd: "direct",
 		val: {
 			cmd: "update_config",
-			val: {
+			val: updatedValues,
+			/*{
 				unread_inbox: profile.unread_inbox,
 				theme: profile.theme,
 				mode: profile.mode,
@@ -295,9 +566,11 @@ export async function updateProfile() {
 				bgm: profile.bgm,
 				bgm_song: profile.bgm_song,
 				layout: profile.layout,
+				hide_blocked_users: profile.hide_blocked_users,
+				favorited_chats: profile.favorited_chats,
 				pfp_data: profile.pfp_data,
 				quote: profile.quote,
-			},
+			},*/
 		},
 	});
 }

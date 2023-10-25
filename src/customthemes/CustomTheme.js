@@ -8,7 +8,7 @@ import {
 	user
 } from "../lib/stores.js"
 
-let fallback = {
+export const fallback = {
 	orange: "#f9a636",
 	orangeButton: "#f9a636",
 	orangeLight: "#ffce8c",

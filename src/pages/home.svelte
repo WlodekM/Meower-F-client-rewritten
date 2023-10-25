@@ -3,9 +3,13 @@
 	It features live post updates and a load more button which is pretty nice.
 -->
 <script>
-	import {ulist} from "../lib/stores.js";
+	import {ulist, user, modalPage, modalShown} from "../lib/stores.js";
 	import Container from "../lib/Container.svelte";
 	import PostList from "../lib/PostList.svelte";
+	if(!user) {
+		modalPage.set("signup");
+		modalShown.set(true);
+	}
 </script>
 
 <div class="home">
