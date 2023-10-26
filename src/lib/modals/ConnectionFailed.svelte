@@ -1,9 +1,14 @@
 <script>
 	import Modal from "../Modal.svelte";
 
-	import {apiUrl} from "../urls.js";
+	import {apiUrl, linkUrl} from "../urls.js";
 
 	import {onMount} from "svelte";
+
+	import {
+		modalShown,
+		modalPage,
+	} from "../stores"
 
 	let repairMode = false;
 	let ipBlocked = false;
@@ -51,6 +56,9 @@
 		<br />
 		<div class="modal-buttons">
 			<button on:click={() => window.location.reload()}>Reconnect</button>
+			{#if linkUrl != "wss://api.meower.org/v0/cloudlink/"}
+				<button on:click={() => {modalPage.set("devTools");modalShown.set(true);}}>Open devTools</button>
+			{/if}
 		</div>
 	</div>
 </Modal>

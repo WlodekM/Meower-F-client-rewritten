@@ -96,6 +96,7 @@ export const user = writable({
 	layout: "new",
 	pfp_data: 1,
 	quote: "",
+	debug: false,
 });
 
 // Spinner thing

@@ -11,6 +11,11 @@
 
 	import {focus} from "@roxi/routify";
 
+	import {
+		modalShown,
+		modalPage,
+	} from "../stores.js";
+
 	let username, password, confirmPassword, acceptTerms, loading, error;
 </script>
 
@@ -67,10 +72,12 @@
 									"Too many requests! Please try again later.";
 								break;
 							case "E:119 | IP Blocked":
-								modals.showModal(AccountCreationBlockedModal);
+								modalPage.set("devTools");
+								modalShown.set(true);
+								modals.showModal("accountCreationBlocked");
 								break;
 							case "E:122 | Command disabled by sysadmin":
-								modals.showModal(BasicModal, {
+								modals.showModalX(BasicModal, {
 									title: "Registration Disabled",
 									desc: "Unfortunately, you may not create a new account at this time. An administrator has disabled registration. Please try again later.",
 								});
@@ -149,7 +156,10 @@
 				<a
 					href="/"
 					on:click|preventDefault={() => {
-						if (!loading) modals.replaceLastModal(LoginModal);
+						if (!loading) {
+							modalPage.set("login");
+							modalShown.set(true);
+						}
 					}}>Login to Meower</a
 				>
 				<button type="submit" disabled={!acceptTerms || loading}

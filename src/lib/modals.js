@@ -46,6 +46,7 @@ export function replaceLastModal(modal, data) {
 }
 
 export function closeLastModal() {
+    modalShown.set(false)
 	_modalStack.splice(0, 1);
 	modalStack.set(_modalStack);
 }

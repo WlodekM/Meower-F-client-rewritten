@@ -1,5 +1,9 @@
 <!-- Meower Svelte, the app itself. -->
 <script>
+	import ConnectionFailedModal from "../lib/modals/ConnectionFailed.svelte";
+	import LoggedOutModal from "../lib/modals/LoggedOut.svelte";
+	import AccountCreationBlockedModal from "../lib/modals/LoggedOut.svelte";
+	import AccountBannedModal from "../lib/modals/safety/AccountBanned.svelte";
 	import Setup from "../lib/Setup.svelte";
 	import OOBE from "../lib/OOBE/Main.svelte";
 	import Sidebar from "../lib/Sidebar.svelte";
@@ -217,6 +221,12 @@
 			<CustomThemeModal />
 		{:else if $modalPage === "image"}
 			<ImageModal />
+		{:else if $modalPage === "connectionFailed"}
+			<ConnectionFailedModal />
+		{:else if $modalPage === "loggedOut"}
+			<LoggedOutModal />
+		{:else if $modalPage === "accountCreationBlocked"}
+			<AccountCreationBlockedModal />
 		{:else}
 			<ErrorModal />
 		{/if}

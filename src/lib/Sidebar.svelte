@@ -144,7 +144,7 @@
 			popupShown = !popupShown;
 			popupDebounce = true;
 			setTimeout(() => (popupDebounce = false), 150);
-			if (shiftHeld) {$user.debug.set(true)}
+			if (shiftHeld) {$user.debug = (true)}
 		}}
 	>
 		<PFP

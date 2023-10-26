@@ -331,7 +331,7 @@ export async function connect() {
 			} catch (e) {
 				link.error("manager", "connection error:", e);
 				link.off(onErrorEv);
-				modals.showModal(ConnectionFailedModal);
+				modals.showModal("connectionFailed");
 			}
 		});
 		ulistEvent = link.on("ulist", cmd => {
@@ -371,7 +371,7 @@ export async function connect() {
 		});
 		bannedEvent = link.on("direct", async cmd => {
 			if (cmd.val.mode === "banned") {
-				modals.showModal(AccountBannedModal, {ban: cmd.val.payload});
+				modals.showModal("banned", {ban: cmd.val.payload});
 			}
 		});
 		inboxMessageEvent = link.on("direct", cmd => {
@@ -462,7 +462,7 @@ export async function connect() {
 		disconnectRequest = link.on("direct", async cmd => {
 			if (disconnectCodes.includes(cmd.val)) {
 				link.log("manager", "Requested disconnect:", cmd.val);
-				modals.showModal(LoggedOutModal);
+				modals.showModal("loggedOut");
 				await disconnect();
 			}
 		});
@@ -473,7 +473,7 @@ export async function connect() {
 		return await link.connect(linkUrl);
 	} catch (e) {
 		link.error("manager", "conenction error:", e);
-		modals.showModal(ConnectionFailedModal);
+		modals.showModal("connectionFailed");
 		return e;
 	}
 }

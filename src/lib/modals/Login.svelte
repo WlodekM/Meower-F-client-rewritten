@@ -3,7 +3,7 @@
 
 	import SignupModal from "./Signup.svelte";
 
-	import {user} from "../stores.js";
+	import {user, modalShown} from "../stores.js";
 	import * as clm from "../clmanager.js";
 	import * as modals from "../modals.js";
 	import * as BGM from "../BGM.js";
@@ -65,7 +65,7 @@
 				}
 
 				BGM.playBGM($user.bgm_song);
-				modals.closeLastModal();
+				modalShown.set(false);
 			}}
 		>
 			<label for="username" style={error ? "color: crimson;" : ""}>
@@ -99,7 +99,7 @@
 				<a
 					href="/"
 					on:click|preventDefault={() => {
-						if (!loading) modals.replaceLastModal(SignupModal);
+						if (!loading) modals.replaceLastModal("signup");
 					}}>Join Meower</a
 				>
 				<button type="submit" disabled={loading}>Login</button>
