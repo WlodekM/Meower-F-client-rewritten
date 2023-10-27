@@ -29,12 +29,13 @@
 	} from "../lib/loadProfile.js";
 
 	import { onMount, tick } from "svelte";
-
+	import {apiUrl, encodeApiURLParams} from "../lib/urls.js";
 
 	export let post = {};
 	export let buttons = true;
 	export let input = null;
 	export let canDoActions = true;
+	var postid = post.post_id
 
 	let bridged = false;
 	let webhook = false;
@@ -42,6 +43,30 @@
 	let frien = false;
 
 	let images = [];
+
+	post.unformatedcontent = post.content
+	onMount(uncensor)
+	async function uncensor() {
+		if(post.content.includes("****")) {
+			//send request to api
+			console.log("censored detected")
+			console.log(post.post_id)
+			let path = `posts?`;
+			if (encodeApiURLParams) path = encodeURIComponent(path);
+			const resp = await fetch(`${apiUrl}${path}` + new URLSearchParams({
+				id: post.post_id
+			}));
+			if (!resp.ok) {
+				console.log(resp)
+				throw new Error("Response code is not OK; code is " + resp.status);
+			}
+			const json = await resp.json();
+			if(json.unfiltered_p) {
+				post.content = json.unfiltered_p
+			}
+			console.log(json);
+		}
+	}
 
 	// IP grabber sites exist, and I don't know if hosting a proxy is feasible
 	// WARNING: Put a / at the end of each URL so it can't be bypassed
@@ -115,7 +140,7 @@
 
 		// Match image syntax
 		// ([title: https://url])
-		const iterator = post.content.matchAll(
+		const iterator = post.unformatedcontent.matchAll(
 			/\[([^\]]+?): (https:\/\/[^\]]+?)\]/gs
 		);
 		images = [];
@@ -133,7 +158,7 @@
 				!IMAGE_HOST_WHITELIST.some((o) =>
 					result.value[2].toLowerCase().startsWith(o.toLowerCase())
 				)
-			) console.log(`image host not whitelisted ${result.value[2].toLowerCase()}`);return;
+			) {console.log(`image host not whitelisted ${result.value[2].toLowerCase()}`);return}
 
 			images.push({
 				title: result.value[1],
@@ -167,7 +192,6 @@
 			out = out.replaceAll(`${"[" + key + "]"}`, `<${formating[key]}>`);
 			out = out.replaceAll(`${"[/" + key + "]"}`, `</${formating[key]}>`);
 		});
-		console.log
 		return out;
 	}
 	function deHTML(input) {
@@ -220,7 +244,9 @@
 		$modalPage = "image";
 		$imageClicked = url;
 	}
+	
 	post.content = format(linkify(deHTML(post.content)))
+	console.log(post.content)
 </script>
 
 <Container>
@@ -409,15 +435,14 @@
 	{/if}
 	<div class="post-images">
 		{#each images as { title, url }}
-		<a href="#image" on:click={() => openImage({ url })}>
-			<img
-				src={url}
-				alt={title}
-				{title}
-				class="post-image"
-			/>
-		</a>
-
+			<a href="#img" on:click={() => openImage({ url })}>
+				<img
+					src={url}
+					alt={title}
+					{title}
+					class="post-image"
+				/>
+			</a>
 		{/each}
 	</div>
 </Container>
