@@ -30,6 +30,7 @@
 
 	import { onMount, tick } from "svelte";
 
+
 	export let post = {};
 	export let buttons = true;
 	export let input = null;
@@ -416,7 +417,7 @@
 				class="post-image"
 			/>
 		</a>
-		
+
 		{/each}
 	</div>
 </Container>

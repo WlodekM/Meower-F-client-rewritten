@@ -2,7 +2,7 @@
 	import Modal from "../Modal.svelte";
 	import Post from "../Post.svelte";
 
-	import {authHeader, user} from "../stores.js";
+	import {authHeader, user, modalShown, postClicked} from "../stores.js";
 	import {apiUrl} from "../urls.js";
 	import * as modals from "../modals.js";
 
@@ -10,12 +10,16 @@
 
 	export let modalData;
 
-	let {post} = modalData;
+	// let {post} = modalData;
 
 	let report, loading, error;
 </script>
 
-<Modal on:close={modals.closeLastModal}>
+<Modal
+on:close={() => {
+	$modalShown = false;
+}}
+>
 	<h2 slot="header">Delete Post</h2>
 	<div slot="default">
 		<form
@@ -23,7 +27,7 @@
 				loading = true;
 				try {
 					const resp = await fetch(
-						`${apiUrl}posts?id=${post.post_id}`,
+						`${apiUrl}posts?id=${$postClicked["post_id"]}`,
 						{
 							method: "DELETE",
 							headers: $authHeader,
@@ -47,8 +51,8 @@
 			}}
 		>
 			<p>Are you sure you would like to delete this post?</p>
-			<Post {post} buttons={false} />
-			{#if post.user !== $user.name}
+			<!-- <Post buttons={false} /> -->
+			{#if $postClicked["user"] !== $user.name}
 				<label>
 					<input type="checkbox" bind:checked={report} />
 					Report to Meower Moderators
