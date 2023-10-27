@@ -1,29 +1,37 @@
 # TODO list
-<sub>TODO list for f client 1.6</sub>
+<sub>TODO list for f client 1.7</sub>
 
 
-Doing:
+## Doing:
  ...
 
-Will do:
+## Bugs:
+**1.7**:
+ - pfp changing and/or loading pfps on profiles is 2wrong
+
+**1.6**:
+ - fix replies with links
+ - fix save login
+ - Dev tools on <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>D</kbd> Needs fixing
+
+## Fixed:
+
+## Will do:
  - Embeds for youtube videos
  - Bring back tweemoji
  - Discord like message stuff (From F client 1.5)
- - fix replies with links
- - fix save login
 
 
-Want to do but idk how:
- - Uncensor posts
+## Want to do but idk how:
  - Emoji selector (ig that would be neat)
 
 
 
-Partialy Done:
+## Partialy Done:
  - Custom themes
- - Dev tools on <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>D</kbd> (Needs fixing)
 
-Done:
+## Done:
+ - Uncensor posts
  - pfps from old f client
  - fixed shift enter
  - Clickable Links
