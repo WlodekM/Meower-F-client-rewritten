@@ -1,6 +1,11 @@
 <!-- The profile page, now with viewing others' profiles. -->
 <script>
-	import {userToMod, modPanelOpen, user} from "../../../lib/stores.js";
+	import {
+		userToMod,
+		modPanelOpen,
+		profileClicked, 
+		user
+	} from "../../../lib/stores.js";
 	import * as modals from "../../../lib/modals.js";
 
 	import {profileCache} from "../../../lib/loadProfile.js";
@@ -20,10 +25,11 @@
 
 	const pfps = new Array(PFP_COUNT).fill().map((_, i) => i + 1);
 	const secret = [-1, 500, 101, 102, -3] //NO 404
+
 	let pfpSwitcher = false;
 
 	async function loadProfile() {
-		let path = `users/${$params.username}`;
+		let path = `users/${$profileClicked}`;
 		if (encodeApiURLParams) path = encodeURIComponent(path);
 		const resp = await fetch(`${apiUrl}${path}`);
 		if (!resp.ok) {
