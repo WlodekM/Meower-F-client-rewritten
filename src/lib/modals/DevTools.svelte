@@ -12,6 +12,7 @@
 	
 	import {profileCache} from "../loadProfile.js";
 	import {autoresize} from "svelte-textarea-autoresize";
+	import {disconnect} from "../clmanager"
 	import ProfileView from "../ProfileView.svelte";
 	import PFP from "../PFP.svelte";
 	import Loading from "../Loading.svelte";
@@ -238,7 +239,7 @@
 		<button
 			class="circle settings"
 			on:click={() => {
-				cljs.disconnect();
+				disconnect();
 				console.warn("Disconnection from ST server triggered via developer tools")
 			}}
 		></button>
@@ -283,7 +284,7 @@
 			on:submit|preventDefault={async e => {	
 				localStorage.setItem("meower_linkurl",e.target[0].value+"/")
 				localStorage.setItem("meower_apiurl",e.target[1].value+"/")
-				cljs.disconnect()
+				disconnect()
 				await tick();
 				location.reload();
 				console.log("Meower server was changed in developer tools, refreshing...")

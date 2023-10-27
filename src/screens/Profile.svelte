@@ -23,8 +23,8 @@
 
 	const PFP_COUNT = 38;
 
+	const secret = [-1, 500, 101, 102, 404, -3]
 	const pfps = new Array(PFP_COUNT).fill().map((_, i) => i + 1);
-	pfps.push(-1, 500, 101, 102, 404, -3) //add secret pfps
 
 	let pfpSwitcher = false;
 
@@ -55,7 +55,7 @@
 	let pfpOverflow = false;
 	$: {
 		const pfp = $user.pfp_data;
-		pfpOverflow = pfp < 0 || pfp > PFP_COUNT;
+		pfpOverflow = (pfp < 0 || pfp > PFP_COUNT) && !(secret.includes(pfp));
 	}
 	function deHTML( input ) {
 		let dhout = input
@@ -118,6 +118,23 @@
 						>
 					{/if}
 					{#each pfps as pfp}
+						<button
+							on:click={() => {
+								pfpSwitcher = false;
+								$user.pfp_data = pfp;
+								save();
+							}}
+							class="pfp"
+							class:selected={$user.pfp_data === pfp}
+							><PFP
+								online={false}
+								icon={pfp}
+								alt="Profile picture {pfp}"
+							/></button
+						>
+					{/each}
+					<hr>
+					{#each secret as pfp}
 						<button
 							on:click={() => {
 								pfpSwitcher = false;

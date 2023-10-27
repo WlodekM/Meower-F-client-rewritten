@@ -19,6 +19,7 @@
 	const PFP_COUNT = 34;
 
 	const pfps = new Array(PFP_COUNT).fill().map((_, i) => i + 1);
+	const secret = [-1, 500, 101, 102, -3] //NO 404
 	let pfpSwitcher = false;
 
 	async function loadProfile() {
@@ -136,6 +137,25 @@
 								/></button
 							>
 						{/if}
+					</div>
+					<hr />
+					<div id="pfp-list">
+						{#each secret as pfp}
+							<button
+								on:click={() => {
+									pfpSwitcher = false;
+									$user.pfp_data = pfp;
+									save();
+								}}
+								class="pfp"
+								class:selected={$user.pfp_data === pfp}
+								><PFP
+									online={false}
+									icon={pfp}
+									alt="Profile picture {pfp}"
+								/></button
+							>
+						{/each}
 					</div>
 				</Container>
 			{:else if $params.username === $user.name}
