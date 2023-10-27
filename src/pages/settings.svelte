@@ -13,7 +13,8 @@
 	You can change your settings here. These will save to your account, so they will
 	carry over into other clients.
 </Container>
-<Container>
+<!-- Removed because it broke when in old layout -->
+<!-- <Container>
 	<div class="settings-controls">
 		<button
 			class="circle settings"
@@ -29,7 +30,7 @@
 
 	<h2>Layout</h2>
 	The layout is currently set to {$user.layout}.
-</Container>
+</Container> -->
 <Container>
 	<div class="settings-controls">
 		<button
