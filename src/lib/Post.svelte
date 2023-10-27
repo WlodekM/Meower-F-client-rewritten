@@ -30,6 +30,7 @@
 
 	import { onMount, tick } from "svelte";
 	import {apiUrl, encodeApiURLParams} from "../lib/urls.js";
+	import {goto} from "@roxi/routify";
 
 	export let post = {};
 	export let buttons = true;
@@ -311,11 +312,11 @@
 		<button
 			class="pfp"
 			on:click={async () => {
+				console.log(noPFP, `users/${post.user}`)
 				if (noPFP) return;
-				page.set("");
 				await tick();
 				profileClicked.set(post.user);
-				page.set("profile");
+				$goto(`/users/${post.user}`);
 			}}
 		>
 			{#await noPFP ? Promise.resolve(true) : loadProfile(post.user)}

@@ -98,7 +98,7 @@
 		};});
 	
 	// var useCustomTheme = true // wip
-	console.log($user)
+	console.log($customTheme)
 
 </script>
 

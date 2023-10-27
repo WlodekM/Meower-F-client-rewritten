@@ -38,7 +38,6 @@
 					type="text"
 					class="modal-input white"
 					placeholder="Theme JSON"
-					maxlength="20"
 					value={theme}
 					autofocus
 				/><br />
