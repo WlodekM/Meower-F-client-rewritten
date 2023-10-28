@@ -117,9 +117,10 @@
 						{#each pfps as pfp}
 							<button
 								on:click={() => {
+									if ($profileCache[$user.name])
+										delete $profileCache[$user.name];
+									clm.updateProfile({pfp_data: pfp});
 									pfpSwitcher = false;
-									$user.pfp_data = pfp;
-									save();
 								}}
 								class="pfp"
 								class:selected={$user.pfp_data === pfp}
@@ -149,9 +150,10 @@
 						{#each secret as pfp}
 							<button
 								on:click={() => {
+									if ($profileCache[$user.name])
+										delete $profileCache[$user.name];
+									clm.updateProfile({pfp_data: pfp});
 									pfpSwitcher = false;
-									$user.pfp_data = pfp;
-									save();
 								}}
 								class="pfp"
 								class:selected={$user.pfp_data === pfp}

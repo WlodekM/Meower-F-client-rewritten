@@ -7,7 +7,6 @@
 
 ## Bugs:
 **1.7**:
- - pfp changing and/or loading pfps on profiles is 2wrong
 
 **1.6**:
  - fix replies with links
@@ -15,6 +14,7 @@
  - Dev tools on <kbd>Alt</kbd> <kbd>Shift</kbd> <kbd>D</kbd> Needs fixing
 
 ## Fixed:
+ - pfp changing is only client side for some reason
 
 ## Will do:
 **1.7**:
