@@ -11,7 +11,7 @@
     }}
 >
     <center slot="header">
-        <img src={$imageClicked.url} alt="An embed viewed in full screen" title="image.png" />
+        <img src={$imageClicked.url} alt="An embed viewed in full screen" title="image.png" height="100%" />
     </center>
     <center slot="default">
         <a href={$imageClicked.url} target="black" style="max-width: 100%"
@@ -21,4 +21,8 @@
 </Modal>
 
 <style>
+    :global(.modal) {
+        max-height: 100% !important;
+        min-width: calc(100vw - 8em) !important;
+    }
 </style>

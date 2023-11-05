@@ -1,11 +1,11 @@
 
 /**
  * @roxi/routify 2.18.12
- * File generated Sat Oct 28 2023 09:13:55 GMT+0300 (за східноєвропейським літнім часом)
+ * File generated Sun Nov 05 2023 12:48:58 GMT+0200 (за східноєвропейським стандартним часом)
  */
 
 export const __version = "2.18.12"
-export const __timestamp = "2023-10-28T06:13:55.480Z"
+export const __timestamp = "2023-11-05T10:48:58.515Z"
 
 //buildRoutes
 import { buildClientTree } from "@roxi/routify/runtime/buildRoutes"
@@ -622,6 +622,55 @@ export const _tree = {
         "prerender": true
       },
       "path": "/users"
+    },
+    {
+      "isFile": false,
+      "isDir": true,
+      "file": "wipSettings",
+      "filepath": "/wipSettings",
+      "name": "wipSettings",
+      "ext": "",
+      "badExt": false,
+      "absolutePath": "C:/Users/wlodz/Downloads/Web-Application-main/Web-Application-main/Meower-F-client-rewritten/src/pages/wipSettings",
+      "children": [
+        {
+          "isFile": true,
+          "isDir": false,
+          "file": "index.svelte",
+          "filepath": "/wipSettings/index.svelte",
+          "name": "index",
+          "ext": "svelte",
+          "badExt": false,
+          "absolutePath": "C:/Users/wlodz/Downloads/Web-Application-main/Web-Application-main/Meower-F-client-rewritten/src/pages/wipSettings/index.svelte",
+          "importPath": "../src/pages/wipSettings/index.svelte",
+          "isLayout": false,
+          "isReset": false,
+          "isIndex": true,
+          "isFallback": false,
+          "isPage": true,
+          "ownMeta": {},
+          "meta": {
+            "recursive": true,
+            "preload": false,
+            "prerender": true
+          },
+          "path": "/wipSettings/index",
+          "id": "_wipSettings_index",
+          "component": () => import('../src/pages/wipSettings/index.svelte').then(m => m.default)
+        }
+      ],
+      "isLayout": false,
+      "isReset": false,
+      "isIndex": false,
+      "isFallback": false,
+      "isPage": false,
+      "ownMeta": {},
+      "meta": {
+        "recursive": true,
+        "preload": false,
+        "prerender": true
+      },
+      "path": "/wipSettings"
     }
   ],
   "isLayout": true,
