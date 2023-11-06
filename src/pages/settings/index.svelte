@@ -323,9 +323,9 @@
 	:global(#main) .tab-button.tab-button:active {
 		background-color: #7776;
 	}
-	:global(#main.layout-mobile) #chat:not(.active) {
+	/* :global(#main.layout-mobile) #chat:not(.active) {
 		display: none;
-	}
+	} */
 
 	.settings {
 		display: flex;
@@ -336,7 +336,7 @@
 	#chat {
 		flex-shrink: 1;
 		flex-grow: 1;
-		overflow: auto;
+		overflow: hidden;
 	}
 	#tabs {
 		height: var(--view-height);
