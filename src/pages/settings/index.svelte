@@ -336,7 +336,7 @@
 	#chat {
 		flex-shrink: 1;
 		flex-grow: 1;
-		overflow: hidden;
+		overflow: auto;
 	}
 	#tabs {
 		height: var(--view-height);
