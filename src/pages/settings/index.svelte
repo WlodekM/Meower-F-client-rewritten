@@ -16,10 +16,10 @@
 		LogOut,
 	} from "lucide-svelte";
 
-	import Profile from "../../lib/settings/Profile.svelte.js";
-	import Theme from "../../lib/settings/Theme.svelte.js";
-	import Security from "../../lib/settings/Security.svelte.js";
-	import Changelog from "../../lib/settings/Changelog.svelte.js";
+	import Profile from "../../lib/settings/Profile.svelte";
+	import Theme from "../../lib/settings/Theme.svelte";
+	import Security from "../../lib/settings/Security.svelte";
+	import Changelog from "../../lib/settings/Changelog.svelte";
 
 	let showTabs = !$mobile;
 	let hoveringTab = "";
