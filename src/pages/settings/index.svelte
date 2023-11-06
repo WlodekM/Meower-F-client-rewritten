@@ -1,5 +1,7 @@
 <!-- Brand new settings experience! -->
 <script>
+// @ts-nocheck
+
 	import {mobile} from "../../lib/responsiveness.js";
 	import {user, modalShown, modalPage} from "../../lib/stores.js";
 
@@ -267,7 +269,7 @@
 			>
 		</div>
 		<div class="top">
-			<h2 class="tabs-title">Settings(WIP)</h2>
+			<h2 class="tabs-title">Settings)</h2>
 		</div>
 	</div>
 	<div id="chat" class:active={!showTabs}>
