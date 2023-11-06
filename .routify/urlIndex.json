@@ -10,5 +10,5 @@
   "/index",
   "/logout",
   "/search",
-  "/wipSettings/index"
+  "/settings/index"
 ]
