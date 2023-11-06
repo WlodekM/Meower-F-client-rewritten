@@ -11,23 +11,6 @@
 		<button
 			class="circle settings"
 			on:click={() => {
-				const _user = $user;
-				_user.layout = _user.layout === "new" ? "old" : "new";
-				user.set(_user);
-
-				clm.updateProfile();
-			}}
-		/>
-	</div>
-
-	<h2>Layout</h2>
-	The layout is currently set to {$user.layout}.
-</Container>
-<Container>
-	<div class="settings-controls">
-		<button
-			class="circle settings"
-			on:click={() => {
 				Modals.showModal("switchTheme");
 			}}
 		/>
