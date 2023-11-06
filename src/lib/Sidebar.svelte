@@ -194,7 +194,8 @@
 			<img src={info} alt="About" draggable={false} />
 			<span class="label">About</span>
 		</button>
-		<button
+		<!-- Moved to new setting -->
+		<!-- <button
 			on:click={() => {
 				$goto("/changelog");
 				popupShown = false;
@@ -203,8 +204,9 @@
 		>
 			<img src={changelog} alt="Changelog" draggable={false} />
 			<span class="label">Changelog</span>
-		</button>
-		<button
+		</button> -->
+		<!-- Moved to new setting -->
+		<!-- <button
 			on:click={() => {
 				popupShown = true;
 				modalPage.set("logout");
@@ -214,7 +216,7 @@
 		>
 			<img src={logout} alt="Log out" draggable={false} />
 			<span class="label">Log out</span>
-		</button>
+		</button> -->
 	</div>
 {/if}
 
