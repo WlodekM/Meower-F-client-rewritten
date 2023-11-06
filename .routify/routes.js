@@ -1,11 +1,11 @@
 
 /**
  * @roxi/routify 2.18.12
- * File generated Sun Nov 05 2023 12:48:58 GMT+0200 (за східноєвропейським стандартним часом)
+ * File generated Mon Nov 06 2023 09:49:38 GMT+0200 (за східноєвропейським стандартним часом)
  */
 
 export const __version = "2.18.12"
-export const __timestamp = "2023-11-05T10:48:58.515Z"
+export const __timestamp = "2023-11-06T07:49:38.961Z"
 
 //buildRoutes
 import { buildClientTree } from "@roxi/routify/runtime/buildRoutes"
@@ -475,31 +475,6 @@ export const _tree = {
       "path": "/search",
       "id": "_search",
       "component": () => import('../src/pages/search.svelte').then(m => m.default)
-    },
-    {
-      "isFile": true,
-      "isDir": false,
-      "file": "settings.svelte",
-      "filepath": "/settings.svelte",
-      "name": "settings",
-      "ext": "svelte",
-      "badExt": false,
-      "absolutePath": "C:/Users/wlodz/Downloads/Web-Application-main/Web-Application-main/Meower-F-client-rewritten/src/pages/settings.svelte",
-      "importPath": "../src/pages/settings.svelte",
-      "isLayout": false,
-      "isReset": false,
-      "isIndex": false,
-      "isFallback": false,
-      "isPage": true,
-      "ownMeta": {},
-      "meta": {
-        "recursive": true,
-        "preload": false,
-        "prerender": true
-      },
-      "path": "/settings",
-      "id": "_settings",
-      "component": () => import('../src/pages/settings.svelte').then(m => m.default)
     },
     {
       "isFile": false,
