@@ -2,9 +2,21 @@
     import Modal from "../Modal.svelte";
 
     import { modalShown, modalPage, imageClicked } from "../stores.js";
-    console.log($imageClicked.url);
-</script>
+    console.log($imageClicked);
+    const getMeta = async(url, cb) => {
+        const img = new Image();
+        img.src = url;
+        await img.decode();  
+        return img
+    };
+    getMeta($imageClicked).then((img) => {
+        $imageClicked.width = img.naturalWidth
+        $imageClicked.height = img.naturalHeight
+        console.log("IMAGE:", $imageClicked, "\nimg:",img)
+    })
 
+</script>
+<div id="img">
 <Modal
     on:close={() => {
         $modalShown = false;
@@ -19,9 +31,10 @@
         >
     </center>
 </Modal>
-
+</div>
 <style>
-    :global(.modal) {
+    
+    #img :global(.modal) {
         max-height: 100% !important;
         min-width: calc(100vw - 8em) !important;
     }

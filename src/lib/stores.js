@@ -64,7 +64,11 @@ export const modPanelOpen = writable(false);
 export const postClicked = writable({});
 export const profileClicked = writable("");
 export const profileClicked_GC = writable("");
-export const imageClicked = writable({});
+export const imageClicked = writable({
+	url: "",
+	width: 0,
+	height: 0,
+});
 export const announcementToSend = writable("");
 export const searchQuery = writable("");
 export const searchType = writable("");
