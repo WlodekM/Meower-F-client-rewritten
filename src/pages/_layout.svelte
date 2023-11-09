@@ -61,6 +61,7 @@
 	import {tick} from "svelte";
 	import {stringToTheme} from "../customthemes/CustomTheme.js";
 	import {altHeld, shiftHeld, isKeyPressed} from "../lib/keyDetect.js";
+	export var layoutTheme;
 	var _customTheme
 	const themes = {
 		"orange":{
@@ -82,7 +83,13 @@
 			orangeDark: "#b46d34"
 		}
 	}
-	
+	function ProcessTheme(theme) {
+		if((theme).startsWith("custom:")) {
+			return stringToTheme($user.theme);
+		} else {
+			return themes[$user.theme];
+		}
+	}
 	_customTheme = $customTheme;
 	if(($user.theme).startsWith("custom:")) {
 		_customTheme = stringToTheme($user.theme);
@@ -125,10 +132,11 @@
 	class:layout-mobile={$mobile}
 	class:input-touch={$touch}
 	class:input-hover={!$touch}
-	style:--orange={$user.name ? $customTheme.orange : null}
-	style:--orange-button={$user.name ? $customTheme.orangeButton : null}
-	style:--orange-light={$user.name ? $customTheme.orangeLight : null}
-	style:--orange-dark={$user.name ? $customTheme.orangeDark : null}
+	style:--orange={$user.name        ? ProcessTheme($user.theme).orange       : null}
+	style:--orange-button={$user.name ? ProcessTheme($user.theme).orangeButton : null}
+	style:--orange-light={$user.name  ? ProcessTheme($user.theme).orangeLight  : null}
+	style:--orange-dark={$user.name   ? ProcessTheme($user.theme).orangeDark   : null}
+	style:--theme={$user.theme}
 
 	on:mousedown={() => BGM.canPlayNow()}
 	on:keydown={() => BGM.canPlayNow()}
@@ -257,6 +265,10 @@
 			<Spinner />
 		</div>
 	{/if}
+
+	<div style="display: none;">
+		{layoutTheme}
+	</div>
 </main>
 
 <style>

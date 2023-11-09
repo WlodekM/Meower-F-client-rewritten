@@ -7,6 +7,7 @@
 	import * as Modals from "../modals.js";
 
     import defaultPreview from "../../assets/themePreviews/OrangeLight.png";
+	import layoutTheme from "../../pages/_layout.svelte"
 
 	const themePreviews = import.meta.glob("../../assets/themePreviews/*.png", {
 		import: "default",
@@ -55,6 +56,7 @@
 		// @ts-ignore
 		currentPreviewImage =
 			themePreviews["../../assets/themePreviews/" + themeName + ".png"] || defaultPreview;
+		layoutTheme = theme
 	}
 
 	function customThemeChange() {
