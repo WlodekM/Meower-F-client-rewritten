@@ -11,11 +11,16 @@
 	<h2>0.1.7 beta</h2>
 	<ul>
 		<li>Ported to svelte 1.7</li>
+		<li>New settings page!</li>
+		<li>Post right click menu (WIP)</li>
+		<li>About page</li>
+		<li>Added un-censored posts</li>
 	</ul>
 </Container>
 <Container>
 	<h2>0.1.2</h2>
 	<ul>
+		<li>Added BCCode support</li>
 		<li>Added image modal when clicked</li>
 		<li>Fixed various bugs</li>
 		<li>Added custom theme support</li>
@@ -24,7 +29,7 @@
 <Container>
 	<h2>0.1.1</h2>
 	<ul>
-		<li>Versions and stuff</li>
+		<li>Fixed version showing up as 1.6</li>
 		<li>Changed "Meower Svelte" to "Meower F Client Rewritten</li>
 	</ul>
 </Container>
@@ -32,6 +37,7 @@
 	<h2>0.1.0</h2>
 	<ul><li>Inital beta</li></ul>
 </Container>
+<hr>
 <Container>
 	<h2>1.7.0</h2>
 	<ul>

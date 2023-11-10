@@ -31,6 +31,8 @@
 	import { onMount, tick } from "svelte";
 	import {apiUrl, encodeApiURLParams} from "../lib/urls.js";
 	import {goto} from "@roxi/routify";
+	import ContextMenu, { Item, Divider, Settings } from "svelte-contextmenu";
+	let myMenu;
 
 	export let post = {};
 	export let buttons = true;
@@ -251,6 +253,10 @@
 </script>
 
 <Container>
+	<div on:contextmenu={(e) => {
+		console.log("Activating context menu");
+		myMenu.show(e);
+	  }}>
 	<div class="post-header">
 		<div class="settings-controls">
 			{#if buttons && $user.name && $chatid !== "livechat" && post.user !== "Server"}
@@ -336,7 +342,7 @@
 									post.user.startsWith("Notification to"))
 							? 101
 							: -2
-						: profile.pfp_data}
+							: profile.pfp_data}
 					alt="{post.user}'s profile picture"
 					online={$ulist.includes(post.user)}
 				/>
@@ -436,16 +442,43 @@
 	{/if}
 	<div class="post-images">
 		{#each images as { title, url }}
-			<a href="#img" on:click={() => openImage({ url })}>
-				<img
-					src={url}
-					alt={title}
-					{title}
-					class="post-image"
-				/>
-			</a>
-		{/each}
+			{#if url.endsWith(".mp4")}
+				<a href="#img" on:click={() => openImage({ url })}>
+					<embed
+						type="vido/mp4"
+						src={url}
+						title={title}
+						class="post-image"
+					/>
+				</a>
+			{:else if url.endsWith(".webm")}
+				<a href="#img" on:click={() => openImage({ url })}>
+					<embed
+						type="vido/webm"
+						src={url}
+						title={title}
+						class="post-image"
+					/>
+				</a>
+			{:else}
+				<a href="#img" on:click={() => openImage({ url })}>
+					<img
+						src={url}
+						alt={title}
+						{title}
+						class="post-image"
+					/>
+				</a>
+			{/if}
+			{/each}
+		</div>
 	</div>
+	<ContextMenu bind:this={myMenu}>
+		<Item>Reply</Item>
+		<Item>Copy Text</Item>
+		<Divider />
+		<Item>Copy Message ID</Item>
+	</ContextMenu>
 </Container>
 
 <style>

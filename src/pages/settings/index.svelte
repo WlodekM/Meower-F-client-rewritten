@@ -21,7 +21,7 @@
 	import Profile from "../../lib/settings/Profile.svelte";
 	import Theme from "../../lib/settings/Theme.svelte";
 	import Security from "../../lib/settings/Security.svelte";
-	import Changelog from "../../lib/settings/Changelog.svelte";
+	import Changelog from "../changelog.svelte";
 
 	let showTabs = !$mobile;
 	let hoveringTab = "";
@@ -338,7 +338,7 @@
 	#chat {
 		flex-shrink: 1;
 		flex-grow: 1;
-		overflow: hidden;
+		overflow: auto;
 	}
 	#tabs {
 		height: var(--view-height);

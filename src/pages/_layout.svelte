@@ -61,7 +61,7 @@
 	import {tick} from "svelte";
 	import {stringToTheme} from "../customthemes/CustomTheme.js";
 	import {altHeld, shiftHeld, isKeyPressed} from "../lib/keyDetect.js";
-	export var layoutTheme;
+	// export var layoutTheme;
 	var _customTheme
 	const themes = {
 		"orange":{
@@ -266,9 +266,9 @@
 		</div>
 	{/if}
 
-	<div style="display: none;">
+	<!-- <div style="display: none;">
 		{layoutTheme}
-	</div>
+	</div> -->
 </main>
 
 <style>

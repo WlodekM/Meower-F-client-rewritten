@@ -19,11 +19,13 @@
 		"prettier": "^2.8.1",
 		"prettier-plugin-svelte": "^2.9.0",
 		"svelte": "^3.49.0",
+		"svelte-right-click": "^0.0.5",
 		"svelte-textarea-autoresize": "^1.0.0",
 		"twemoji": "^14.0.2",
 		"vite": "^4.0.0"
 	},
 	"dependencies": {
-		"lucide-svelte": "^0.292.0"
+		"lucide-svelte": "^0.292.0",
+		"svelte-contextmenu": "^1.0.2"
 	}
 }
