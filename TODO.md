@@ -3,6 +3,7 @@
 
 
 ## Doing:
+ - Add editing messages from 1.8
  ...
 
 ## Bugs:
@@ -37,6 +38,7 @@
 
 ## Partialy Done:
 **1.7**:
+ - Right click context menu
 
 **1.6**:
  - Image modal
@@ -44,6 +46,7 @@
 
 ## Done:
 **1.7**:
+ - Add DMs from 1.8
  - pfps from 1.6 f client
 
 **1.6**:
