@@ -88,20 +88,7 @@ export const authHeader = writable({
 });
 
 // The current user profile
-export const user = writable({
-	name: null,
-	lvl: 0,
-	unread_inbox: false,
-	theme: "orange",
-	mode: true,
-	sfx: true,
-	bgm: false,
-	bgm_song: 2,
-	layout: "new",
-	pfp_data: 1,
-	quote: "",
-	debug: false,
-});
+export const user = writable(unloadedProfile());
 
 // Spinner thing
 export const spinner = writable(false);

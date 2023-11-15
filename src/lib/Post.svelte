@@ -475,7 +475,9 @@
 	</div>
 	<ContextMenu bind:this={myMenu}>
 		<Item>Reply</Item>
-		<Item>Copy Text</Item>
+		{#if typeof window.getSelection != "undefined"} 
+			<Item on:click={() => {document.execCommand('copy');}}>Copy Text</Item>
+		{/if}
 		<Divider />
 		<Item>Copy Message ID</Item>
 	</ContextMenu>
