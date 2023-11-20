@@ -56,7 +56,7 @@
 		// @ts-ignore
 		currentPreviewImage =
 			themePreviews["../../assets/themePreviews/" + themeName + ".png"] || defaultPreview;
-		layoutTheme = theme
+		$layoutTheme = Object(theme)
 	}
 
 	function customThemeChange() {
