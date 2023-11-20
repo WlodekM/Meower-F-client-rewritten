@@ -15,8 +15,9 @@
 	import PFP from "../../../lib/PFP.svelte";
 	import Loading from "../../../lib/Loading.svelte";
 	import Container from "../../../lib/Container.svelte";
-	import * as clm from "../../../lib/clmanager.js";
+	import {userRestrictions, isRestricted} from "../../../lib/bitField.js";
 	import {apiUrl, encodeApiURLParams} from "../../../lib/urls.js";
+	import * as clm from "../../../lib/clmanager.js";
 
 	import {params, goto} from "@roxi/routify";
 	import {tick} from "svelte";
@@ -76,8 +77,9 @@
 			<ProfileView username={$params.username} />
 
 			{#if $user.name == $params.username}
-				<Container>
+			<Container>
 					<h3>Quote</h3>
+					<!-- disabled={isRestricted(userRestrictions.EDITING_QUOTE)} -->
 					<input
 						type="text"
 						class="modal-input white"
@@ -85,9 +87,7 @@
 						placeholder="Write something..."
 						maxlength="360"
 						bind:value={$user.quote}
-						on:change={async () => {
-							await clm.updateProfile();
-						}}
+						on:change={() => clm.updateProfile({quote: $user.quote})}
 					/>
 				</Container>
 			{:else if data.quote}

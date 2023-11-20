@@ -14,7 +14,7 @@
 		eager: true,
 	});
 
-	let selections = ["orange", "dark-orange", "blue", "dark-blue"];
+	let selections = ["orange", "dark-orange", "blue", "dark-blue", "98"];
 
 	let error = false;
 
@@ -41,7 +41,7 @@
 		themePreviews["../../assets/themePreviews/" + themeName + ".png"] || defaultPreview;
 
 	function changeTheme() {
-		selection = clamp(selection, 0, 3);
+		selection = clamp(selection, 0, selections.length - 1);
 		theme = selections[selection];
         darkMode = false;
         if (theme.startsWith("dark-")) {

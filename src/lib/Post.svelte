@@ -6,6 +6,9 @@
 	import Badge from "./Badge.svelte";
 	import ReplyPost from "./ReplyPost.svelte";
 	import Repost from "./Repost.svelte";
+	import MarkdownIt from "markdown-it";
+	import twemoji from "twemoji";
+	import {autoresize} from "svelte-textarea-autoresize";
 
 	import LiText from "./LiText.svelte";
 
@@ -13,14 +16,16 @@
 		profileClicked,
 		postClicked,
 		user,
-		chatid,
+		chat,
 		ulist,
 		mainPage as page,
 		modalShown,
 		modalPage,
 		imageClicked,
+		authHeader,
 	} from "../lib/stores.js";
 	import { shiftHeld } from "../lib/keyDetect.js";
+	import * as modals from "../lib/modals.js";
 	import * as clm from "../lib/clmanager.js";
 	//
 	import {
@@ -44,6 +49,14 @@
 	let webhook = false;
 	let dev = false;
 	let frien = false;
+
+	let editing = false;
+	let editError = "";
+	let editContentInput, editSaveButton;
+
+	let deleteButton;
+
+	let adminDeleteButton, adminRestoreButton;
 
 	let images = [];
 
@@ -173,6 +186,9 @@
 		images = images;
 
 		if (!webhook) loadProfile(post.user);
+		post.content = format(markdown(deHTML(post.content)))
+		post.content = post.content.replaceAll("<p>", "<span>")
+		post.content = post.content.replaceAll("</p>", "</span>")
 	}
 	onMount(initPostUser);
 
@@ -196,6 +212,61 @@
 			out = out.replaceAll(`${"[/" + key + "]"}`, `</${formating[key]}>`);
 		});
 		return out;
+	}
+	function markdown(input) {
+		try {
+			const md = new MarkdownIt("default", {
+				breaks: true,
+				linkify: true,
+				typographer:  true,
+			});
+			md.linkify.add("@", {
+				validate: function (text, pos) {
+					var tail = text.slice(pos);
+					return tail.match(/[a-zA-Z0-9-_]{1,20}/gs)[0].length;
+				},
+				normalize: function (match) {
+					match.url = window.location.host + "/users/" + match.url.replace(/^@/, '');
+				}
+			});
+			const tokens = md.parse(input.replaceAll(/\[([^\]]+?): (https:\/\/[^\]]+?)\]/gs, "").replaceAll(/\*\*\*\*/gs, "\\*\\*\\*\\*"));
+			for (const token of tokens) {
+				if (token.children) {
+					for (const childToken of token.children) {
+						if (childToken.type === "image") {
+							const srcPos = childToken.attrs.findIndex(attr => attr[0] === "src");
+							if (!IMAGE_HOST_WHITELIST.some(o =>
+								childToken.attrs[srcPos][1].toLowerCase().startsWith(o.toLowerCase())
+							)) {
+								childToken.attrs[srcPos][1] = "about:blank";
+								console.log(childToken);
+							}
+						}
+						if (childToken.type === "link_open") {
+							const href = childToken.attrs.find(attr => attr[0] === "href")[1];
+							childToken.attrs.push(["onclick", `return confirmLink('${href}')`]);
+						}
+					}
+				}
+			}
+			input = md.renderer.render(tokens, md.options);
+
+			// add quote containers to blockquotes (although, quotes are currently broken)
+			input = input.replaceAll(
+				/<blockquote>(.+?)<\/blockquote>/gms,
+				'<div class="quote-container"><blockquote>$1</blockquote></div>'
+			);
+		} catch (e) {
+			console.error(`Failed to load markdown on ${post.post_id}: ${e}`);
+		}
+
+		// twemoji
+		input = twemoji.parse(input, {
+			folder: "svg",
+			ext: ".svg",
+			size: 20,
+		});
+		return input
 	}
 	function deHTML(input) {
 		let dhout = input;
@@ -248,27 +319,65 @@
 		$imageClicked = url;
 	}
 	
-	post.content = format(linkify(deHTML(post.content)))
 	console.log(post.content)
 </script>
 
 <Container>
-	<div on:contextmenu={(e) => {
+	<!-- on:contextmenu={(e) => {
 		console.log("Activating context menu");
 		myMenu.show(e);
-	  }}>
+	  }} -->
+	<div >
 	<div class="post-header">
 		<div class="settings-controls">
-			{#if buttons && $user.name && $chatid !== "livechat" && post.user !== "Server"}
-				{#if input && post.user !== "Notification" && post.user !== "Announcement"}
+			<!-- {#if adminView && hasPermission(adminPermissions.DELETE_POSTS)}
+				{#if post.isDeleted}
 					<button
-						class="circle join"
+						class="circle restore"
+						title="Restore post"
+						bind:this={adminRestoreButton}
+						on:click={adminRestore}
+					/>
+				{:else}
+					<button
+						class="circle trash"
+						title="Delete post"
+						bind:this={adminDeleteButton}
+						on:click={adminDelete}
+					/>
+				{/if}
+			{:else if !adminView} -->
+				<!-- {#if !editing && hasPermission(adminPermissions.VIEW_POSTS)}
+					<button
+						class="circle admin"
+						on:click={() =>
+							modals.showModal("moderatePost", {
+								postid: post.post_id,
+							})}
+					/>
+				{/if} -->
+				{#if input && !input.disabled && !noPFP && !editing}
+					{#if post.user === $user.name}
+						<button
+							class="circle pen"
+							on:click={async () => {
+								editError = "";
+								editing = true;
+								await tick();
+								editContentInput.value =
+									post.unfiltered_content || post.content;
+								editContentInput.focus();
+								autoresize(editContentInput);
+							}}
+						/>
+					{/if}
+					<button
+						class="circle reply"
 						on:click={() => {
 							let existingText = input.value;
 
-							const mentionRegex =
-								/^@\w+\s\[\w+-\w+-\w+-\w+-\w+\]\s*/i;
-							const mention = `@${post.user} [${post.post_id}] `;
+							const mentionRegex = /^@\w+\s*/i;
+							const mention = "@" + post.user + " ";
 
 							if (mentionRegex.test(existingText)) {
 								input.value = existingText
@@ -281,39 +390,52 @@
 							input.focus();
 						}}
 					/>
-				{/if}
-				{#if canDoActions}
-					{#if $user.lvl >= 1 || post.user === $user.name}
+					{#if post.user === $user.name || (post.post_origin === $chat._id && $chat.owner === $user.name)}
 						<button
 							class="circle trash"
-							on:click={() => {
+							bind:this={deleteButton}
+							on:click={async () => {
 								if (shiftHeld) {
-									clm.meowerRequest({
-										cmd: "direct",
-										val: {
-											cmd: "delete_post",
-											val: post.post_id,
-										},
+									deleteButton.disabled = true;
+									try {
+										const resp = await fetch(
+											`${apiUrl}posts?id=${post.post_id}`,
+											{
+												method: "DELETE",
+												headers: $authHeader,
+											}
+										);
+										if (!resp.ok) {
+											if (resp.status === 429) {
+												throw new Error(
+													"Too many requests! Try again later."
+												);
+											}
+											throw new Error(
+												"Response code is not OK; code is " +
+													resp.status
+											);
+										}
+									} catch (e) {
+										editError = e;
+									}
+									deleteButton.disabled = false;
+								} else {
+									modals.showModal("deletePost", {
+										post,
 									});
-									return;
 								}
-								postClicked.set(post);
-								modalPage.set("deletePost");
-								modalShown.set(true);
 							}}
 						/>
 					{:else}
 						<button
 							class="circle report"
-							on:click={() => {
-								postClicked.set(post);
-								modalPage.set("reportPost");
-								modalShown.set(true);
-							}}
+							on:click={() =>
+								modals.showModal("reportPost", {post})}
 						/>
 					{/if}
 				{/if}
-			{/if}
+			<!-- {/if} -->
 		</div>
 		<button
 			class="pfp"
@@ -409,7 +531,67 @@
 			{/if}
 		</div>
 	</div>
-	{#if post.content.search(/^\[\w+-\w+-\w+-\w+-\w+\]\s*/i) != -1 || (post.content.search(/^@\w+\s\[\w+-\w+-\w+-\w+-\w+\]\s*/i) != -1)}
+	{#if editing}
+		<textarea
+			type="text"
+			class="white"
+			name="input"
+			autocomplete="off"
+			maxlength="4000"
+			rows="1"
+			bind:this={editContentInput}
+			use:autoresize
+			on:keydown={event => {
+				if (event.key == "Enter" && !shiftHeld) {
+					event.preventDefault();
+					if (!editSaveButton.disabled) editSaveButton.click();
+				} else if (event.key == "Escape") {
+					editing = false;
+				}
+			}}
+		/>
+		<div style="display: flex; justify-content: space-between;">
+			<button on:click={() => (editing = false)}>Cancel</button>
+			<button
+				bind:this={editSaveButton}
+				on:click={async () => {
+					if (editContentInput.value.trim() === "") {
+						return;
+					}
+
+					editing = false;
+					try {
+						const resp = await fetch(
+							`${apiUrl}posts?id=${post.post_id}`,
+							{
+								method: "PATCH",
+								headers: {
+									"Content-Type": "application/json",
+									...$authHeader,
+								},
+								body: JSON.stringify({
+									content: editContentInput.value,
+								}),
+							}
+						);
+						if (!resp.ok) {
+							if (resp.status === 429) {
+								throw new Error(
+									"Too many requests! Try again later."
+								);
+							}
+							throw new Error(
+								"Response code is not OK; code is " +
+									resp.status
+							);
+						}
+					} catch (e) {
+						editError = e;
+					}
+				}}>Save</button
+			>
+		</div>
+	{:else if post.content.search(/^\[\w+-\w+-\w+-\w+-\w+\]\s*/i) != -1 || (post.content.search(/^@\w+\s\[\w+-\w+-\w+-\w+-\w+\]\s*/i) != -1)}
 		<br />
 		{#if post.content.search(/^@\w+\s\[\w+-\w+-\w+-\w+-\w+\]\s*/i) != -1}
 			<ReplyPost
@@ -473,14 +655,14 @@
 			{/each}
 		</div>
 	</div>
-	<ContextMenu bind:this={myMenu}>
+	<!-- <ContextMenu bind:this={myMenu}>
 		<Item>Reply</Item>
 		{#if typeof window.getSelection != "undefined"} 
 			<Item on:click={() => {document.execCommand('copy');}}>Copy Text</Item>
 		{/if}
 		<Divider />
 		<Item>Copy Message ID</Item>
-	</ContextMenu>
+	</ContextMenu> -->
 </Container>
 
 <style>

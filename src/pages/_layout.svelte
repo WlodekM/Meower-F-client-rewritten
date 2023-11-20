@@ -76,6 +76,12 @@
 			orangeLight:           "#79b7ff",
 			orangeDark:            "#3685eb"
 		},
+		"98":{
+			orange: "#f9a636",
+			orangeButton: "#f9a636",
+			orangeLight: "#ffce8c",
+			orangeDark: "#b46d34"
+		},
 		undefined:{
 			orange: "#f9a636",
 			orangeButton: "#f9a636",
@@ -126,6 +132,7 @@
 	id="main"
 	class:theme-orange={$user.theme === "orange"}
 	class:theme-blue={$user.theme === "blue"}
+	class:s98={$user.theme === "98"}
 	class:mode-light={$user.mode === true && ($user.name || $screen !== "setup")}
 	class:mode-dark={$user.mode === false || !($user.name || $screen !== "setup")}
 	class:layout-old={false}
@@ -272,6 +279,21 @@
 </main>
 
 <style>
+	:global(#main.s98 button) {
+		border:none;
+		border-radius:0;
+		box-sizing:border-box;
+		color:transparent;
+		/* min-height:23px;
+		min-width:75px; */
+		padding:0 12px;
+		text-shadow:0 0 #222;
+		-webkit-font-smoothing:none;
+		font-family:"Pixelated MS Sans Serif",Arial;
+		/* font-size:11px; */
+		background:silver;
+		box-shadow:inset -1px -1px #0a0a0a,inset 1px 1px #fff,inset -2px -2px grey,inset 2px 2px #dfdfdf;
+	}
 	.sidebar-container {
 		padding: 0;
 		margin-right: 0.5em;

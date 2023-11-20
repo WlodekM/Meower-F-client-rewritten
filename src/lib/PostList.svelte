@@ -50,6 +50,7 @@
 	export let canPost = true;
 	export let queryParams = {};
 	export let addToChat = false;
+	export let adminView = false;
 
 	// @ts-ignore
 	import {autoresize} from "svelte-textarea-autoresize";
@@ -175,19 +176,45 @@
 			if (!cmd.val) return;
 
 			const isGC = postOrigin !== "home";
-			if (cmd.val.mode == "delete") {
+			if (cmd.val.mode === "delete") {
+				if (adminView) return;
 				items = items.filter(post => post.post_id !== cmd.val.id);
 			} // This needs to be here to even function - Bloctans
+			if (cmd.val.mode === "update_post") {
+				let itemIndex = items.findIndex(
+					post => post.post_id === cmd.val.payload._id
+				);
+				if (itemIndex !== -1) {
+					let post = cmd.val.payload;
+					items[itemIndex] = {
+						id: items[itemIndex].id,
+						post_id: post._id,
+						post_origin: post.post_origin,
+						user: post.u,
+						content: post.p,
+						unfiltered_content: post.unfiltered_p,
+						date: post.t.e,
+						edited_at: post.edited_at,
+						isDeleted: post.isDeleted,
+						mod_deleted: post.mod_deleted,
+						deleted_at: post.deleted_at,
+					};
+				}
+			}
 			if (!isGC || cmd.val.state === 2) {
 				if (cmd.val.post_origin !== postOrigin) return;
 				list.addItem({
 					id: id++,
 					post_id: cmd.val._id,
+					post_origin: cmd.val.post_origin,
 					user: cmd.val.u,
 					content: cmd.val.p,
+					unfiltered_content: cmd.val.unfiltered_p,
 					date: cmd.val.t.e,
-					post_origin: cmd.val.post_origin,
+					edited_at: cmd.val.edited_at,
 					isDeleted: cmd.val.isDeleted,
+					mod_deleted: cmd.val.mod_deleted,
+					deleted_at: cmd.val.deleted_at,
 				});
 				if ($user.sfx && cmd.val.u !== $user.name) playNotification();
 			}
@@ -195,10 +222,10 @@
 				list.addItem({
 					id: id++,
 					post_id: "",
-					user: "Server",
-					content: `${cmd.val.u} left ${chatName}.`,
-					date: Date.now() / 1000,
 					post_origin: postOrigin || fetchUrl,
+					user: "Server",
+					content: `@${cmd.val.u} left ${chatName}.`,
+					date: Date.now() / 1000,
 					isDeleted: false,
 				});
 				if ($user.sfx && cmd.val.u !== $user.name) playNotification();
@@ -207,10 +234,10 @@
 				list.addItem({
 					id: id++,
 					post_id: "",
-					user: "Server",
-					content: `${cmd.val.u} joined ${chatName}!`,
-					date: Date.now() / 1000,
 					post_origin: postOrigin || fetchUrl,
+					user: "Server",
+					content: `@${cmd.val.u} joined ${chatName}.`,
+					date: Date.now() / 1000,
 					isDeleted: false,
 				});
 				if ($user.sfx) playNotification();
