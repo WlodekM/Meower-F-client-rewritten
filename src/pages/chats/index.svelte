@@ -55,12 +55,12 @@
 				class="circle plus"
 				on:click={() => {
 					if (isRestricted(userRestrictions.NEW_CHATS)) {
-						modals.showModal(AccountBannedModal, {
+						modals.showModal("accountBanned", {
 							ban: $user.ban,
 							feature: "creating group chats",
 						});
 					} else {
-						modals.showModal(CreateChatModal);
+						modals.showModal("createChat");
 					}
 				}}
 			/>

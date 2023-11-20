@@ -186,11 +186,15 @@
 		images = images;
 
 		if (!webhook) loadProfile(post.user);
-		post.content = format(markdown(deHTML(post.content)))
-		post.content = post.content.replaceAll("<p>", "<span>")
-		post.content = post.content.replaceAll("</p>", "</span>")
 	}
 	onMount(initPostUser);
+
+	function addFancyElements(content) {
+		let newContent = format(markdown(deHTML(content)))
+		newContent = newContent.replaceAll("<p>", "<span>")
+		newContent = newContent.replaceAll("</p>", "</span>")
+		return newContent
+	}
 
 	function format(input) {
 		let out = input;
@@ -376,8 +380,9 @@
 						on:click={() => {
 							let existingText = input.value;
 
-							const mentionRegex = /^@\w+\s*/i;
-							const mention = "@" + post.user + " ";
+							const mentionRegex =
+								/^@\w+\s\[\w+-\w+-\w+-\w+-\w+\]\s*/i;
+							const mention = `@${post.user} [${post.post_id}] `;
 
 							if (mentionRegex.test(existingText)) {
 								input.value = existingText
@@ -595,11 +600,11 @@
 		<br />
 		{#if post.content.search(/^@\w+\s\[\w+-\w+-\w+-\w+-\w+\]\s*/i) != -1}
 			<ReplyPost
-				post={post.content
+				post={(post.content
 					.split(" ")
 					.splice(1, 1)[0]
 					.replace("[", "")
-					.replace("]", "")}
+					.replace("]", ""))}
 			/>
 			<p class="post-content">
 				{@html post.content
@@ -608,18 +613,18 @@
 			</p>
 		{:else}
 			<Repost
-				post={post.content
+				post={(post.content
 					.split(" ")[0]
 					.replace("[", "")
-					.replace("]", "")}
+					.replace("]", ""))}
 			/>
 			<p class="post-content">
-				{@html post.content.split(/^\[\w+-\w+-\w+-\w+-\w+\]\s*/i).join(" ")}
+				{@html addFancyElements(post.content.split(/^\[\w+-\w+-\w+-\w+-\w+\]\s*/i).join(" "))}
 			</p>
 		{/if}
 	{:else}
 		<p class="post-content">
-			{@html post.content}
+			{@html addFancyElements(post.content)}
 		</p>
 	{/if}
 	<div class="post-images">
