@@ -17,7 +17,7 @@
 	let imgName;
 
 	let images = [];
-	let content = $postInput.value || "[: ]";
+	let content = $postInput.value || "!()[]";
 	let post = {
 		post_id: "",
 		post_origin: "home",
@@ -83,7 +83,7 @@
 
 	function change() {
 		const full =
-			$postInput.value + " [" + imgName.value + ": " + imgUrl.value + "]";
+			$postInput.value + " !(" + imgName.value + ")[" + imgUrl.value + "]";
 		post.content = full;
 		initPostUser();
 
@@ -108,20 +108,7 @@
 		} catch (e) {
 			console.log("weird");
 		}
-
-		if (
-			!IMAGE_HOST_WHITELIST.some(o =>
-				result.value[2].toLowerCase().startsWith(o.toLowerCase())
-			)
-		) {
-			postErrors =
-				"This image is not on the image host whitelist! Allowed image hosts are: " +
-				IMAGE_HOST_WHITELIST.map(url =>
-					url.replaceAll("https://", "").replaceAll("/", "")
-				).join(", ");
-		} else {
-			postErrors = "";
-		}
+		postErrors = "";
 	}
 
 	let postErrors = "The image must have a name!";

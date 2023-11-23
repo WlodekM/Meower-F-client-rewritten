@@ -307,6 +307,11 @@ button.trash {
 	background-size: 55%;
 }
 
+button.terminal {
+	background-image: url("./terminal.svg");
+	background-size: 50%;
+}
+
 button.report {
 	background-image: url("./report.svg");
 	background-size: 50%;
@@ -361,6 +366,12 @@ button.add {
 	background-image: url("./add.svg");
 	background-size: 50%;
 }
+
+button.at, button.email, button.mention {
+	background-image: url("./mention.svg");
+	background-size: 50%;
+}
+
 
 button.reload {
 	background-image: url("./loader.svg");

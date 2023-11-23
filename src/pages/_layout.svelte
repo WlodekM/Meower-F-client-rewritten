@@ -315,7 +315,7 @@
 		--orange-button: var(--orange);
 		--orange-light: #ffce8c;
 		--orange-dark: #b46d34;
-		--orange-scrollbar-back: #a15d04;
+		--orange-scrollbar-back: color-mix(in srgb, #000000 20%, var(--orange-dark));
 		--background: white;
 		--foreground: black;
 		--foreground-orange: white;

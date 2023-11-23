@@ -229,6 +229,7 @@
 
 	.sidebar {
 		background-color: var(--orange);
+		padding: 1em;
 
 		display: flex;
 		align-items: center;
@@ -245,7 +246,7 @@
 
 		width: 100%;
 		height: 100%;
-		padding-inline: 0;
+		/* padding-inline: 0; */
 		width: 3.5em;
 	}
 	.sidebar > button {

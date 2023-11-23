@@ -395,6 +395,25 @@
 							input.focus();
 						}}
 					/>
+					<button
+						class="circle mention"
+						on:click={() => {
+							let existingText = input.value;
+
+							const mentionRegex = /^@\w+\s*/i;
+							const mention = "@" + post.user + " ";
+
+							if (mentionRegex.test(existingText)) {
+								input.value = existingText
+									.trim()
+									.replace(mentionRegex, mention);
+							} else {
+								input.value = mention + existingText.trim();
+							}
+
+							input.focus();
+						}}
+					/>
 					{#if post.user === $user.name || (post.post_origin === $chat._id && $chat.owner === $user.name)}
 						<button
 							class="circle trash"

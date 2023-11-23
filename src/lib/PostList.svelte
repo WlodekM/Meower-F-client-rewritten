@@ -29,6 +29,7 @@
 		chatid,
 		chatMembers,
 		postInput as postInput_2,
+		ulist,
 	} from "./stores.js";
 	import {shiftHeld} from "./keyDetect.js";
 	import {playNotification} from "./sounds.js";
@@ -39,6 +40,8 @@
 	import TypingIndicator from "./TypingIndicator.svelte";
 	import ProfileView from "./ProfileView.svelte";
 	import * as clm from "./clmanager.js";
+	import PFP from "./PFP.svelte";
+	import LiText from "./LiText.svelte";
 	import {apiUrl, encodeApiURLParams} from "./urls.js";
 
 	import {createEventDispatcher} from "svelte";
@@ -256,8 +259,21 @@
 		if (!fetchUrl) dispatch("loaded");
 	});
 </script>
-
 <div>
+	<Container>
+		<div class="profile-header">
+			<PFP
+				online={$ulist.includes($user._id)}
+				icon={$user._id === $user.name
+					? $user.pfp_data
+					: $user.pfp_data}
+				alt="{$user._id}'s profile picture"
+				size={0.7}
+			/>
+			<h1 class="profile-username">
+				<LiText text={$user._id} />
+			</h1>
+		</div>
 	<!-- I think we discussed that guest posting will not be in
 		the official client, due to moderation reasons -->
 	{#if canPost && $user.name}
@@ -319,8 +335,9 @@
 			placeholder="Write something..."
 			name="input"
 			autocomplete="false"
-			maxlength="500"
-			rows="1"
+			style="border-style: dashed;"
+			maxlength="4000"
+			rows="5"
 			use:autoresize
 			on:input={() => {
 				if ($lastTyped + 1500 < +new Date()) {
@@ -349,19 +366,22 @@
 			}}
 			bind:this={postInput}
 		/>
-		<button
-			class="upload-image"
-			name="addImage"
-			title="Add an image"
-			on:click|preventDefault={() => {
-				postInput_2.set(postInput);
-				Modals.showModal("addImg");
-			}}>+</button
-		>
-		<button bind:this={submitBtn} name="submit" disabled={!postInput}>Post</button>
+		<div class="buttons">
+			<button bind:this={submitBtn} name="submit" disabled={!postInput}>Post</button>
+			<button
+				class="upload-image"
+				name="addImage"
+				title="Add an image"
+				on:click|preventDefault={() => {
+					postInput_2.set(postInput);
+					Modals.showModal("addImg");
+				}}>+</button
+			>
+		</div>
 	</form>
 	{/if}
 	<div class="post-errors">{postErrors}</div>
+	</Container>
 	{#if postOrigin}
 	<TypingIndicator forPage={postOrigin} />
 	{/if}
@@ -491,14 +511,23 @@
 
 <style>
 	.createpost {
-		display: flex;
+		/* display: flex; */
 		margin-bottom: 0.5em;
 		gap: 0.25em;
 	}
 	.createpost textarea {
-		flex-grow: 1;
+		width: 100%;
+		/* flex-grow: 1; */
 		resize: none;
 		max-height: 300px;
+	}
+	.createpost .buttons {
+		display: flex;
+	}
+	.createpost button {
+		resize: vertical;
+		margin-top: 0.5rem;
+		margin-right: 0.5rem;
 	}
 
 	.post-errors {
@@ -523,6 +552,21 @@
 
 	.item {
 		position: relative;
+	}
+
+	.profile-header {
+		display: flex;
+		align-items: center;
+		margin-bottom: 1rem;
+		/* flex-wrap: wrap; */
+	}
+
+	.profile-username {
+		margin: 0;
+		padding: 0;
+		margin-left: 5px;
+		display: inline-block;
+		max-width: 100%;
 	}
 
 	button.circle {
