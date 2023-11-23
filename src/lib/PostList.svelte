@@ -260,6 +260,10 @@
 	});
 </script>
 <div>
+	<!-- I think we discussed that guest posting will not be in
+		the official client, due to moderation reasons -->
+	<!-- Note from wl: I won't add posting using webhooks because of spam -->
+	{#if canPost && $user.name}
 	<Container>
 		<div class="profile-header">
 			<PFP
@@ -274,9 +278,6 @@
 				<LiText text={$user._id} />
 			</h1>
 		</div>
-	<!-- I think we discussed that guest posting will not be in
-		the official client, due to moderation reasons -->
-	{#if canPost && $user.name}
 		<form
 			class="createpost"
 			autocomplete="off"
@@ -379,9 +380,9 @@
 			>
 		</div>
 	</form>
-	{/if}
 	<div class="post-errors">{postErrors}</div>
 	</Container>
+	{/if}
 	{#if postOrigin}
 	<TypingIndicator forPage={postOrigin} />
 	{/if}
