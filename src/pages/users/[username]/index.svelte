@@ -25,7 +25,8 @@
 	const PFP_COUNT = 34;
 
 	const pfps = new Array(PFP_COUNT).fill().map((_, i) => i + 1);
-	const secret = [-1, 500, 101, 102, -3] //NO 404
+	const secret = [-1, 0, 101, 102, -3] //NO 404
+	const f_pfps = [35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46] // F client pfps
 
 	let pfpSwitcher = false;
 
@@ -56,7 +57,7 @@
 	let pfpOverflow = false;
 	$: {
 		const pfp = $user.pfp_data;
-		pfpOverflow = pfp < 0 || pfp > PFP_COUNT;
+		pfpOverflow = (pfp < 0 || pfp > PFP_COUNT) && !(secret.includes(pfp) || f_pfps.includes(pfp));
 	}
 
 	let hidden = false;
@@ -144,6 +145,26 @@
 								/></button
 							>
 						{/if}
+					</div>
+					<hr />
+					<div id="pfp-list">
+						{#each f_pfps as pfp}
+							<button
+								on:click={() => {
+									if ($profileCache[$user.name])
+										delete $profileCache[$user.name];
+									clm.updateProfile({pfp_data: pfp});
+									pfpSwitcher = false;
+								}}
+								class="pfp"
+								class:selected={$user.pfp_data === pfp}
+								><PFP
+									online={false}
+									icon={pfp}
+									alt="Profile picture {pfp}"
+								/></button
+							>
+						{/each}
 					</div>
 					<hr />
 					<div id="pfp-list">
